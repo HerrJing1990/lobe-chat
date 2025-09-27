@@ -1,23 +1,22 @@
+import { LOBE_CHAT_OBSERVATION_ID, LOBE_CHAT_TRACE_ID, MESSAGE_CANCEL_FLAT } from '@lobechat/const';
 import { parseToolCalls } from '@lobechat/model-runtime';
-import { ChatErrorType } from '@lobechat/types';
-
-import { MESSAGE_CANCEL_FLAT } from '@/const/message';
-import { LOBE_CHAT_OBSERVATION_ID, LOBE_CHAT_TRACE_ID } from '@/const/trace';
-import { ResponseAnimation, ResponseAnimationStyle } from '@/types/llm';
 import {
+  ChatErrorType,
+  ChatImageChunk,
   ChatMessageError,
+  GroundingSearch,
   MessageToolCall,
   MessageToolCallChunk,
   MessageToolCallSchema,
   ModelReasoning,
   ModelSpeed,
   ModelTokensUsage,
-} from '@/types/message';
-import { ChatImageChunk } from '@/types/message/image';
-import { GroundingSearch } from '@/types/search';
+  ResponseAnimation,
+  ResponseAnimationStyle,
+} from '@lobechat/types';
 
+import { fetchEventSource } from '../client/fetchEventSource';
 import { nanoid } from '../uuid';
-import { fetchEventSource } from './fetchEventSource';
 import { getMessageError } from './parseError';
 
 type SSEFinishType = 'done' | 'error' | 'abort';
@@ -331,8 +330,7 @@ export const fetchSSE = async (url: string, options: RequestInit & FetchSSEOptio
 
   // 添加文本buffer和计时器相关变量
   let textBuffer = '';
-  // eslint-disable-next-line no-undef
-  let bufferTimer: NodeJS.Timeout | null = null;
+  let bufferTimer: ReturnType<typeof setTimeout> | null = null;
   const BUFFER_INTERVAL = 300; // 300ms
 
   const flushTextBuffer = () => {
@@ -363,8 +361,7 @@ export const fetchSSE = async (url: string, options: RequestInit & FetchSSEOptio
   });
 
   let thinkingBuffer = '';
-  // eslint-disable-next-line no-undef
-  let thinkingBufferTimer: NodeJS.Timeout | null = null;
+  let thinkingBufferTimer: ReturnType<typeof setTimeout> | null = null;
 
   // 创建一个函数来处理buffer的刷新
   const flushThinkingBuffer = () => {
